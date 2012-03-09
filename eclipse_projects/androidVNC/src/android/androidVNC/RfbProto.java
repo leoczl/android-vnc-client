@@ -1073,7 +1073,7 @@ class RfbProto {
   synchronized void writePointerEvent( int x, int y, int modifiers, int pointerMask) throws IOException
   {
 	    eventBufLen = 0;
-	    writeModifierKeyEvents(modifiers);
+	    writeModifierKeyEvents(modifiers, true);
 
 	    eventBuf[eventBufLen++] = (byte) PointerEvent;
 	    eventBuf[eventBufLen++] = (byte) pointerMask;
@@ -1087,7 +1087,7 @@ class RfbProto {
 	    //
 
 	    if (pointerMask == 0) {
-	      writeModifierKeyEvents(0);
+	      writeModifierKeyEvents(VncCanvas.ALT_MASK | VncCanvas.CTRL_MASK | VncCanvas.SHIFT_MASK | VncCanvas.META_MASK, false);
 	    }
 
 	    os.write(eventBuf, 0, eventBufLen);	  
@@ -1099,17 +1099,17 @@ class RfbProto {
 	  try {
 		  // Press
 		  eventBufLen = 0;
-		  writeModifierKeyEvents(CTRLALT);
+		  writeModifierKeyEvents(CTRLALT, true);
 		  writeKeyEvent(DELETE, true);
 		  os.write(eventBuf, 0, eventBufLen);
 		  
 		  // Release
 		  eventBufLen = 0;
-		  writeModifierKeyEvents(CTRLALT);
+		  writeModifierKeyEvents(CTRLALT, true);
 		  writeKeyEvent(DELETE, false);
 		  
 		  // Reset VNC server modifiers state
-		  writeModifierKeyEvents(0);
+		  writeModifierKeyEvents(CTRLALT, false);
 		  os.write(eventBuf, 0, eventBufLen);
 	  } catch (IOException e) {
 		  e.printStackTrace();
@@ -1124,13 +1124,13 @@ class RfbProto {
   synchronized void writeKeyEvent(int keySym, int metaState, boolean down) throws IOException {
     eventBufLen = 0;
     if (down)
-    	writeModifierKeyEvents(metaState);
+    	writeModifierKeyEvents(metaState, down);
     if (keySym != 0)
     	writeKeyEvent(keySym, down);
 
     // Always release all modifiers after an "up" event
     if (!down)
-      writeModifierKeyEvents(0);
+      writeModifierKeyEvents(metaState, down);
 
     os.write(eventBuf, 0, eventBufLen);
   }
@@ -1160,20 +1160,36 @@ class RfbProto {
 
   int oldModifiers = 0;
 
-  void writeModifierKeyEvents(int newModifiers) {
+  void writeModifierKeyEvents(int newModifiers, boolean down) {
+    oldModifiers = newModifiers;
+	if (!down)
+	{
+		newModifiers = 0;
+	}
     if ((newModifiers & VncCanvas.CTRL_MASK) != (oldModifiers & VncCanvas.CTRL_MASK))
-      writeKeyEvent(0xffe3, (newModifiers & VncCanvas.CTRL_MASK) != 0);
-
+    {
+    	int x = (newModifiers & VncCanvas.CTRL_MASK);
+    	writeKeyEvent(0xffe3, down ? (x != 0) : (x == 0));
+    }
+    
     if ((newModifiers & VncCanvas.SHIFT_MASK) != (oldModifiers & VncCanvas.SHIFT_MASK))
-      writeKeyEvent(0xffe1, (newModifiers & VncCanvas.SHIFT_MASK) != 0);
+    {
+    	int x = (newModifiers & VncCanvas.SHIFT_MASK);
+    	writeKeyEvent(0xffe1, down ? (x != 0) : (x == 0));
+    }
 
     if ((newModifiers & VncCanvas.META_MASK) != (oldModifiers & VncCanvas.META_MASK))
-      writeKeyEvent(0xffe7, (newModifiers & VncCanvas.META_MASK) != 0);
+    {
+    	int x = (newModifiers & VncCanvas.META_MASK);
+    	writeKeyEvent(0xffe7, down ? (x != 0) : (x == 0));
+    }
 
     if ((newModifiers & VncCanvas.ALT_MASK) != (oldModifiers & VncCanvas.ALT_MASK))
-      writeKeyEvent(0xffe9, (newModifiers & VncCanvas.ALT_MASK) != 0);
+    {
+    	int x = (newModifiers & VncCanvas.ALT_MASK);
+    	writeKeyEvent(0xffe9, down ? (x != 0) : (x == 0));
+    }
 
-    oldModifiers = newModifiers;
   }
   //
   // Compress and write the data into the recorded session file. This

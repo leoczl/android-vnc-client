@@ -757,7 +757,7 @@ public class VncCanvas extends ImageView {
 
     // Useful shortcuts for modifier masks.
 
-    final static int CTRL_MASK  = KeyEvent.META_SYM_ON;
+    final static int CTRL_MASK  = 4096; //META_CTRL_ON
     final static int SHIFT_MASK = KeyEvent.META_SHIFT_ON;
     final static int META_MASK  = 0;
     final static int ALT_MASK   = KeyEvent.META_ALT_ON;
@@ -862,6 +862,7 @@ public class VncCanvas extends ImageView {
 		}		
 	}
 
+	private int oldModifiers;
 	public boolean processLocalKeyEvent(int keyCode, KeyEvent evt) {
 		if (keyCode == KeyEvent.KEYCODE_MENU)
 			// Ignore menu key
@@ -906,16 +907,17 @@ public class VncCanvas extends ImageView {
 		   
 		   switch(keyCode) {
 		   	  case KeyEvent.KEYCODE_BACK :        key = 0xff1b; break;
-		      case KeyEvent.KEYCODE_DPAD_LEFT:    key = 0xff51; break;
-		   	  case KeyEvent.KEYCODE_DPAD_UP:      key = 0xff52; break;
-		   	  case KeyEvent.KEYCODE_DPAD_RIGHT:   key = 0xff53; break;
-		   	  case KeyEvent.KEYCODE_DPAD_DOWN:    key = 0xff54; break;
+		   	  case 111: key = 0xff1b; break;
 		      case KeyEvent.KEYCODE_DEL: 		  key = 0xff08; break;
 		      case KeyEvent.KEYCODE_ENTER:        key = 0xff0d; break;
 		      case KeyEvent.KEYCODE_DPAD_CENTER:  key = 0xff0d; break;
+		      case 57: key = 0xffe9; oldModifiers = flip(oldModifiers, ALT_MASK, down); break;
+		      case 58: key = 0xffea; oldModifiers = flip(oldModifiers, ALT_MASK, down); break;
+		      case 117: key = 0xffe3; oldModifiers = flip(oldModifiers, CTRL_MASK, down); break;
+		      case 118: key = 0xffe4; oldModifiers = flip(oldModifiers, CTRL_MASK, down); break;
 		      default: 							  
 		    	  key = evt.getUnicodeChar();
-		    	  metaState = 0;
+		    	  metaState = oldModifiers;
 		    	  break;
 		    }
 	    	try {
@@ -927,7 +929,8 @@ public class VncCanvas extends ImageView {
 	    		}
 	    		if (down)
 	    			lastKeyDown = key;
-	    		//Log.i(TAG,"key = " + key + " metastate = " + metaState + " keycode = " + keyCode);
+	    		Log.e(TAG,(down ? "DOWN" : "UP") + " key = " + key + " oldMetaState = " + oldModifiers + " metastate = " + metaState + " keycode = " + keyCode);
+	    		
 	    		rfb.writeKeyEvent(key, metaState, down);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -935,6 +938,33 @@ public class VncCanvas extends ImageView {
 			return true;
 		}
 		return false;
+	}
+
+	private int flip(int modifiers, int mask, boolean down) {
+		if (down)
+		{
+			return modifiers | mask;
+		}
+		else
+		{
+			return modifiers & ~mask;
+		}
+	}
+
+	/**
+	 * Convert Android mask to VncCanvas mask
+	 * @param metaState
+	 * @return
+	 */
+	private int convertMask(int metaState) {
+		int ret = 0;
+		
+		if ((metaState & KeyEvent.META_ALT_ON) != 0)
+		{
+			ret |= VncCanvas.ALT_MASK;
+		}
+		
+		return ret;
 	}
 
 	public void closeConnection() {
