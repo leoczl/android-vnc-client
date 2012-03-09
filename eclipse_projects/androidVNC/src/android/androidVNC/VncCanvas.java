@@ -911,6 +911,11 @@ public class VncCanvas extends ImageView {
 		      case KeyEvent.KEYCODE_DEL: 		  key = 0xff08; break;
 		      case KeyEvent.KEYCODE_ENTER:        key = 0xff0d; break;
 		      case KeyEvent.KEYCODE_DPAD_CENTER:  key = 0xff0d; break;
+		      case KeyEvent.KEYCODE_TAB: key = 0xff09; break;
+		      case KeyEvent.KEYCODE_DPAD_UP: key = 0xff52; break;
+		      case KeyEvent.KEYCODE_DPAD_DOWN: key = 0xff54; break;
+		      case KeyEvent.KEYCODE_DPAD_LEFT: key = 0xff51; break;
+		      case KeyEvent.KEYCODE_DPAD_RIGHT: key = 0xff53; break;
 		      case 57: key = 0xffe9; oldModifiers = flip(oldModifiers, ALT_MASK, down); break;
 		      case 58: key = 0xffea; oldModifiers = flip(oldModifiers, ALT_MASK, down); break;
 		      case 117: key = 0xffe3; oldModifiers = flip(oldModifiers, CTRL_MASK, down); break;

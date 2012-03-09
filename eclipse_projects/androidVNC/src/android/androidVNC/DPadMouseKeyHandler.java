@@ -35,7 +35,7 @@ class DPadMouseKeyHandler {
 		int yv = 0;
 		boolean result = true;
 		switch (keyCode) {
-		case KeyEvent.KEYCODE_DPAD_LEFT:
+/*		case KeyEvent.KEYCODE_DPAD_LEFT:
 			xv = -1;
 			break;
 		case KeyEvent.KEYCODE_DPAD_RIGHT:
@@ -47,7 +47,7 @@ class DPadMouseKeyHandler {
 		case KeyEvent.KEYCODE_DPAD_DOWN:
 			yv = 1;
 			break;
-		case KeyEvent.KEYCODE_DPAD_CENTER:
+*/		case KeyEvent.KEYCODE_DPAD_CENTER:
 			if (!mouseDown) {
 				mouseDown = true;
 				result = canvas.processPointerEvent(canvas.mouseX, canvas.mouseY, MotionEvent.ACTION_DOWN, evt.getMetaState(), mouseDown, canvas.cameraButtonDown);
