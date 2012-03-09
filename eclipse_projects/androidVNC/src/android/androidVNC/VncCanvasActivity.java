@@ -40,6 +40,7 @@ import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.ClipboardManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -724,6 +725,16 @@ public class VncCanvasActivity extends Activity {
 		vncCanvas.enableRepaints();
 		super.onRestart();
 	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		MenuItem pasteItem = menu.findItem(R.id.itemPaste);
+		
+		ClipboardManager clipboard = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+		pasteItem.setEnabled(clipboard.hasText());
+		
+		return true;
+	}
 
 	/** {@inheritDoc} */
 	@Override
@@ -862,6 +873,13 @@ public class VncCanvasActivity extends Activity {
 		case R.id.itemEnterText:
 			showDialog(R.layout.entertext);
 			return true;
+		case R.id.itemPaste:
+		{
+			ClipboardManager clipboard = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+			CharSequence pasteText = clipboard.getText();
+			vncCanvas.sendText(pasteText);
+			return true;
+		}
 		case R.id.itemCtrlAltDel:
 			vncCanvas.sendMetaKey(MetaKeyBean.keyCtrlAltDel);
 			return true;

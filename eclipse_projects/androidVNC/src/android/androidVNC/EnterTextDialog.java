@@ -71,34 +71,11 @@ class EnterTextDialog extends Dialog {
 		return s;
 	}
 	
-	private void sendText(String s)
+	private void sendText(String text)
 	{
-		RfbProto rfb = _canvasActivity.vncCanvas.rfb;
-		int l = s.length();
-		for (int i = 0; i<l; i++)
-		{
-			char c = s.charAt(i);
-			int meta = 0;
-			int keysym = c;
-			if (Character.isISOControl(c))
-			{
-				if (c=='\n')
-					keysym = MetaKeyBean.keysByKeyCode.get(KeyEvent.KEYCODE_ENTER).keySym;
-				else
-					continue;
-			}
-			try
-			{
-				rfb.writeKeyEvent(keysym, meta, true);
-				rfb.writeKeyEvent(keysym, meta, false);
-			}
-			catch (IOException ioe)
-			{
-				// TODO: log this
-			}
-		}		
+		_canvasActivity.vncCanvas.sendText(text);
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see android.app.Dialog#onCreate(android.os.Bundle)
 	 */

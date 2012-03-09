@@ -1667,4 +1667,30 @@ public class VncCanvas extends ImageView {
 
 		bitmapData.updateBitmap(x, y, w, h);
 	}
+
+	public void sendText(CharSequence pasteText) {
+		int l = pasteText.length();
+		for (int i = 0; i<l; i++)
+		{
+			char c = pasteText.charAt(i);
+			int meta = 0;
+			int keysym = c;
+			if (Character.isISOControl(c))
+			{
+				if (c=='\n')
+					keysym = MetaKeyBean.keysByKeyCode.get(KeyEvent.KEYCODE_ENTER).keySym;
+				else
+					continue;
+			}
+			try
+			{
+				rfb.writeKeyEvent(keysym, meta, true);
+				rfb.writeKeyEvent(keysym, meta, false);
+			}
+			catch (IOException ioe)
+			{
+				Log.e(TAG, ioe.getMessage());
+			}
+		}		
+	}
 }
