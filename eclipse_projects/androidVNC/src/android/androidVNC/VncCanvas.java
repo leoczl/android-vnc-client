@@ -907,7 +907,7 @@ public class VncCanvas extends ImageView {
 		   
 		   switch(keyCode) {
 		   	  case KeyEvent.KEYCODE_BACK :        key = 0xff1b; break;
-		   	  case 111: key = 0xff1b; break;
+		   	  case 111: key = 0xff1b; break; //escape key
 		      case KeyEvent.KEYCODE_DEL: 		  key = 0xff08; break;
 		      case KeyEvent.KEYCODE_ENTER:        key = 0xff0d; break;
 		      case KeyEvent.KEYCODE_DPAD_CENTER:  key = 0xff0d; break;

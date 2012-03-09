@@ -1161,11 +1161,11 @@ class RfbProto {
   int oldModifiers = 0;
 
   void writeModifierKeyEvents(int newModifiers, boolean down) {
-    oldModifiers = newModifiers;
-	if (!down)
-	{
-		newModifiers = 0;
-	}
+	  if (!down)
+	  {
+		  newModifiers = 0;
+		  down = true;
+	  }
     if ((newModifiers & VncCanvas.CTRL_MASK) != (oldModifiers & VncCanvas.CTRL_MASK))
     {
     	int x = (newModifiers & VncCanvas.CTRL_MASK);
@@ -1190,6 +1190,7 @@ class RfbProto {
     	writeKeyEvent(0xffe9, down ? (x != 0) : (x == 0));
     }
 
+    oldModifiers = newModifiers;
   }
   //
   // Compress and write the data into the recorded session file. This
